@@ -26,6 +26,8 @@ from tqdm import tqdm
 from utils.general import check_requirements, check_file, check_dataset, xyxy2xywh, xywh2xyxy, xywhn2xyxy, xyn2xy, \
     segment2box, segments2boxes, resample_segments, clean_str
 from utils.torch_utils import torch_distributed_zero_first
+from utils.hkm_remove_fog import get_sub_gray
+
 
 # Parameters
 help_url = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
@@ -574,7 +576,15 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             labels_out[:, 1:] = torch.from_numpy(labels)
 
         # Convert
-        img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
+
+        #img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
+        #print("ddddddddddddd")
+        sub_gray=get_sub_gray(img)
+        sub_gray=np.expand_dims(sub_gray,2)
+        img = img[:,:,::-1]
+        img = np.append(img,sub_gray,2)
+        img = img.transpose(2, 0, 1)
+
         img = np.ascontiguousarray(img)
 
         return torch.from_numpy(img), labels_out, self.img_files[index], shapes

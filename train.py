@@ -124,7 +124,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         model.load_state_dict(state_dict, strict=False)  # load
         logger.info('Transferred %g/%g items from %s' % (len(state_dict), len(model.state_dict()), weights))  # report
     else:
-        model = Model(cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
+        model = Model(cfg, ch=4, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
     with torch_distributed_zero_first(RANK):
         check_dataset(data_dict)  # check
     train_path = data_dict['train']
