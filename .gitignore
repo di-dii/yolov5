@@ -25,6 +25,7 @@
 storage.googleapis.com
 runs/*
 data/*
+!data/kag_fire.yaml
 !data/hyps/*
 !data/images/zidane.jpg
 !data/images/bus.jpg
