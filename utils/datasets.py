@@ -66,7 +66,7 @@ def exif_size(img):
 
 
 def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=None, augment=False, cache=False, pad=0.0,
-                      rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix=''):
+                      rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix='', use4ch=False):
     # Make sure only the first process in DDP process the dataset first, and the following others can use the cache
     with torch_distributed_zero_first(rank):
         dataset = LoadImagesAndLabels(path, imgsz, batch_size,
@@ -78,7 +78,9 @@ def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=Non
                                       stride=int(stride),
                                       pad=pad,
                                       image_weights=image_weights,
-                                      prefix=prefix)
+                                      prefix=prefix,
+                                      use4ch=use4ch
+                                      )
 
     batch_size = min(batch_size, len(dataset))
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, workers])  # number of workers
@@ -355,7 +357,7 @@ def img2label_paths(img_paths):
 
 class LoadImagesAndLabels(Dataset):  # for training/testing
     def __init__(self, path, img_size=640, batch_size=16, augment=False, hyp=None, rect=False, image_weights=False,
-                 cache_images=False, single_cls=False, stride=32, pad=0.0, prefix=''):
+                 cache_images=False, single_cls=False, stride=32, pad=0.0, prefix='',use4ch=False):
         self.img_size = img_size
         self.augment = augment
         self.hyp = hyp
@@ -365,6 +367,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.mosaic_border = [-img_size // 2, -img_size // 2]
         self.stride = stride
         self.path = path
+        self.use4ch=use4ch
 
         try:
             f = []  # image files
@@ -577,13 +580,14 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
         # Convert
 
-        #img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
-        #print("ddddddddddddd")
-        sub_gray=get_sub_gray(img)
-        sub_gray=np.expand_dims(sub_gray,2)
-        img = img[:,:,::-1]
-        img = np.append(img,sub_gray,2)
-        img = img.transpose(2, 0, 1)
+        if not self.use4ch:
+            img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
+        else:
+            sub_gray=get_sub_gray(img)
+            sub_gray=np.expand_dims(sub_gray,2)
+            img = img[:,:,::-1]
+            img = np.append(img,sub_gray,2)
+            img = img.transpose(2, 0, 1)
 
         img = np.ascontiguousarray(img)
 

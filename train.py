@@ -112,24 +112,26 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
 
     # Model
+    chnum = 4 if opt.use4ch else 3
     pretrained = weights.endswith('.pt')
     if pretrained:
         with torch_distributed_zero_first(RANK):
             weights = attempt_download(weights)  # download if not found locally
         ckpt = torch.load(weights, map_location=device)  # load checkpoint
-        model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
+        model = Model(cfg or ckpt['model'].yaml, ch=chnum, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
         exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
         state_dict = ckpt['model'].float().state_dict()  # to FP32
         state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
         model.load_state_dict(state_dict, strict=False)  # load
         logger.info('Transferred %g/%g items from %s' % (len(state_dict), len(model.state_dict()), weights))  # report
     else:
-        model = Model(cfg, ch=4, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
+        model = Model(cfg, ch=chnum, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
     with torch_distributed_zero_first(RANK):
         check_dataset(data_dict)  # check
     train_path = data_dict['train']
     test_path = data_dict['val']
-
+    if opt.use4ch:
+        logger.info('Using 4 chanels for train and test')
     # Freeze
     freeze = []  # parameter names to freeze (full or partial)
     for k, v in model.named_parameters():
@@ -223,7 +225,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     dataloader, dataset = create_dataloader(train_path, imgsz, batch_size // WORLD_SIZE, gs, single_cls,
                                             hyp=hyp, augment=True, cache=opt.cache_images, rect=opt.rect, rank=RANK,
                                             workers=workers,
-                                            image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr('train: '))
+                                            image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr('train: '),
+                                            use4ch=opt.use4ch)
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
     nb = len(dataloader)  # number of batches
     assert mlc < nc, 'Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g' % (mlc, nc, data, nc - 1)
@@ -233,7 +236,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         testloader = create_dataloader(test_path, imgsz_test, batch_size // WORLD_SIZE * 2, gs, single_cls,
                                        hyp=hyp, cache=opt.cache_images and not notest, rect=True, rank=-1,
                                        workers=workers,
-                                       pad=0.5, prefix=colorstr('val: '))[0]
+                                       pad=0.5, prefix=colorstr('val: '), use4ch=opt.use4ch)[0]
 
         if not resume:
             labels = np.concatenate(dataset.labels, 0)
@@ -393,7 +396,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                                             dataloader=testloader,
                                             save_dir=save_dir,
                                             save_json=is_coco and final_epoch,
-                                            verbose=nc < 50 and final_epoch,
+                                            verbose=nc < 50 , #and final_epoch
                                             plots=plots and final_epoch,
                                             wandb_logger=wandb_logger,
                                             compute_loss=compute_loss)
@@ -515,6 +518,7 @@ def parse_opt(known=False):
     parser.add_argument('--save_period', type=int, default=-1, help='Log model after every "save_period" epoch')
     parser.add_argument('--artifact_alias', type=str, default="latest", help='version of dataset artifact to be used')
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
+    parser.add_argument('--use4ch', action='store_true', help='use 4 channels')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
