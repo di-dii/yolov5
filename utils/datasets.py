@@ -593,6 +593,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             
             # fire seg
             fireseg_gray = get_color_seg(img)
+            fireseg_gray = np.expand_dims(fireseg_gray,2)
             img = img[:,:,::-1]
             img = np.append(img,fireseg_gray,2)
             img = img.transpose(2, 0, 1)
