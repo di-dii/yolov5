@@ -6,7 +6,7 @@ import cv2 as cv
 import numpy as np
 
 def get_ohta_seg(imgt):
-    print("###################")
+    #print("###################")
     img=imgt.astype(np.int16)
     B = img[:, :, 0]
     G = img[:, :, 1]
