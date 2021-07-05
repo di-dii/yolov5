@@ -29,6 +29,7 @@ from utils.torch_utils import torch_distributed_zero_first
 
 from utils.hkm_remove_fog import get_sub_gray
 from utils.color_fire_segm import get_color_seg
+from utils.ohta_otsu_fire import get_ohta_seg
 
 # Parameters
 help_url = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
@@ -591,11 +592,18 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             # img = np.append(img,sub_gray,2)
             # img = img.transpose(2, 0, 1)
             
-            # fire seg
-            fireseg_gray = get_color_seg(img)
-            fireseg_gray = np.expand_dims(fireseg_gray,2)
+            # color_fire seg
+            # fireseg_gray = get_color_seg(img)
+            # fireseg_gray = np.expand_dims(fireseg_gray,2)
+            # img = img[:,:,::-1]
+            # img = np.append(img,fireseg_gray,2)
+            # img = img.transpose(2, 0, 1)
+
+            # ohta_fire seg
+            fireseg_gray2 = get_ohta_seg(img)
+            fireseg_gray2 = np.expand_dims(fireseg_gray2,2)
             img = img[:,:,::-1]
-            img = np.append(img,fireseg_gray,2)
+            img = np.append(img,fireseg_gray2,2)
             img = img.transpose(2, 0, 1)
 
         img = np.ascontiguousarray(img)
