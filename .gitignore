@@ -27,6 +27,7 @@ runs/*
 data/*
 !data/my_fires.yaml
 !data/kag_fire.yaml
+!data/kag_2wfs.yaml
 !data/hyps/*
 !data/images/zidane.jpg
 !data/images/bus.jpg

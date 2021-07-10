@@ -1,0 +1,9 @@
+train: /kaggle/input/my2wfs/images/train  # 118287 images
+val: /kaggle/input/my2wfs/images/val  # 5000 images
+test: /kaggle/input/my2wfs/images/test  # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
+
+# number of classes
+nc: 2
+
+# class names
+names: [ 'fire', 'smoke' ]
