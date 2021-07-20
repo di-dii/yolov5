@@ -56,7 +56,7 @@ class TransformerLayer(nn.Module):
     # Transformer layer https://arxiv.org/abs/2010.11929 (LayerNorm layers removed for better performance)
     def __init__(self, c, num_heads):
         super().__init__()
-        self.q = nn.Linear(c, c, bias=False)
+        self.q = nn.Linear(c, c, bias=False)   ## 第二个c可以改变
         self.k = nn.Linear(c, c, bias=False)
         self.v = nn.Linear(c, c, bias=False)
         self.ma = nn.MultiheadAttention(embed_dim=c, num_heads=num_heads)
@@ -84,10 +84,10 @@ class TransformerBlock(nn.Module):
         if self.conv is not None:
             x = self.conv(x)
         b, _, w, h = x.shape
-        p = x.flatten(2)
-        p = p.unsqueeze(0)
-        p = p.transpose(0, 3)
-        p = p.squeeze(3)
+        p = x.flatten(2)    # p is b c w*h
+        p = p.unsqueeze(0)  #  p is 1 b c w*h
+        p = p.transpose(0, 3) #  p is w*h b c 1
+        p = p.squeeze(3)     # p is w*h b c 
         e = self.linear(p)
         x = p + e
 
