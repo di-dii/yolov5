@@ -20,11 +20,6 @@ from utils.torch_utils import time_synchronized
 
 
 
-######################## cty add
-
-######################## cty add end
-
-
 def autopad(k, p=None):  # kernel, padding
     # Pad to 'same'
     if p is None:
@@ -215,6 +210,28 @@ class Concat(nn.Module):
 
     def forward(self, x):
         return torch.cat(x, self.d)
+
+######################## cty add
+class myTR(nn.Module):
+    def __init__(self,c1,c2):
+        super(myTR, self).__init__()
+        self.cv1 = Conv(c1,96,3,2)
+        self.cv2 = Conv(96,96,3,2)
+        self.TR = TransformerBlock(96,96,4,1)
+        #self.cv3 = Conv(96,1,1,1)
+        self.upcv1 = nn.ConvTranspose2d(96,1,3,2,1,1)
+        self.upcv2 = nn.ConvTranspose2d(1,1,3,2,1,1)
+
+    def forward(self,x):
+        y=self.cv2(self.cv2(self.cv1(x)))
+        y=self.TR(y)
+        y=self.upcv1(y)
+        y=self.upcv2(self.upcv2(y))
+        return x * y.expand_as(x)
+
+
+######################## cty add end
+
 
 
 class NMS(nn.Module):
