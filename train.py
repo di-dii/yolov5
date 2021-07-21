@@ -236,7 +236,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     # Process 0
     if RANK in [-1, 0]:
         testloader = create_dataloader(test_path, imgsz_test, batch_size // WORLD_SIZE * 2, gs, single_cls,
-                                       hyp=hyp, cache=opt.cache_images and not notest, rect=True, rank=-1,
+                                       hyp=hyp, cache=opt.cache_images and not notest, rect=False, rank=-1,  #True
                                        workers=workers,
                                        pad=0.5, prefix=colorstr('val: '), use4ch=opt.use4ch)[0]
 

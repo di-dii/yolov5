@@ -223,6 +223,8 @@ class myTR(nn.Module):
         self.upcv2 = nn.ConvTranspose2d(1,1,3,2,1,1)
 
     def forward(self,x):
+        #TODO 下采样有问题 在测试时没有固定长宽同时为640*640 所以会存在部分图片不能被8除尽的问题
+        # 暂时解决方案：关闭测试时的rect trainning
         y=self.cv2(self.cv2(self.cv1(x)))
         y=self.TR(y)
         y=self.upcv1(y)
