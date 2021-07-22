@@ -215,21 +215,25 @@ class Concat(nn.Module):
 class myTR(nn.Module):
     def __init__(self,c1,c2):
         super(myTR, self).__init__()
-        self.cv1 = Conv(c1,96,3,2)
-        self.cv2 = Conv(96,96,3,2)
-        self.TR = TransformerBlock(96,96,4,1)
-        #self.cv3 = Conv(96,1,1,1)
-        self.upcv1 = nn.ConvTranspose2d(96,1,3,2,1,1)
-        self.upcv2 = nn.ConvTranspose2d(1,1,3,2,1,1)
+        #self.cv1 = Conv(c1,96,3,2)
+        #self.cv2 = Conv(96,96,3,2)
+        self.cv1 = Conv(c1,96,8,8,0)
+        self.TR = TransformerBlock(96,96,4,2)
+        #self.upcv1 = nn.ConvTranspose2d(96,1,3,2,1,1)
+        #self.upcv2 = nn.ConvTranspose2d(1,1,3,2,1,1)
+        self.upcv1 = nn.ConvTranspose2d(96,1,8,8)
+        self.backchl = Conv(1,c1,3,1)
 
     def forward(self,x):
         #TODO 下采样有问题 在测试时没有固定长宽同时为640*640 所以会存在部分图片不能被8除尽的问题
         # 暂时解决方案：关闭测试时的rect trainning
-        y=self.cv2(self.cv2(self.cv1(x)))
+        #y=self.cv2(self.cv2(self.cv1(x)))
+        y=self.cv1(x)
         y=self.TR(y)
+        # y=self.upcv1(y)
+        # y=self.upcv2(self.upcv2(y))
         y=self.upcv1(y)
-        y=self.upcv2(self.upcv2(y))
-        return x * y.expand_as(x)
+        return  x * self.backchl(y)   #x * y.expand_as(x)
 
 
 ######################## cty add end
