@@ -217,12 +217,12 @@ class myTR(nn.Module):
         super(myTR, self).__init__()
         #self.cv1 = Conv(c1,96,3,2)
         #self.cv2 = Conv(96,96,3,2)
-        self.cv1 = Conv(c1,96,8,8,0)
-        self.TR = TransformerBlock(96,96,4,2)
+        self.cv1 = Conv(c1,128,8,8,0)
+        self.TR = TransformerBlock(128,128,4,2)
         #self.upcv1 = nn.ConvTranspose2d(96,1,3,2,1,1)
         #self.upcv2 = nn.ConvTranspose2d(1,1,3,2,1,1)
-        self.upcv1 = nn.ConvTranspose2d(96,1,8,8)
-        self.backchl = Conv(1,c1,3,1)
+        self.upcv1 = nn.ConvTranspose2d(128,10,8,8)
+        self.backchl = Conv(10,c1,3,1)
 
     def forward(self,x):
         #TODO 下采样有问题 在测试时没有固定长宽同时为640*640 所以会存在部分图片不能被8除尽的问题
@@ -233,7 +233,9 @@ class myTR(nn.Module):
         # y=self.upcv1(y)
         # y=self.upcv2(self.upcv2(y))
         y=self.upcv1(y)
-        return  x * self.backchl(y)   #x * y.expand_as(x)
+        y=self.backchl(y)
+        y=y.sigmoid()
+        return  x * y   #x * y.expand_as(x)
 
 
 ######################## cty add end
