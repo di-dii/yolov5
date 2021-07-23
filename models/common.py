@@ -234,9 +234,23 @@ class myTR(nn.Module):
         # y=self.upcv2(self.upcv2(y))
         y=self.upcv1(y)
         y=self.backchl(y)
-        y=y.sigmoid()
-        return  x * y   #x * y.expand_as(x)
+        #y=y.sigmoid()
+        return  x + y   #x * y.expand_as(x)
 
+class myTRcat(nn.Module):
+    def __init__(self,c1,c2):
+        super(myTRcat, self).__init__()
+        self.cv1 = Conv(c1,128,8,8,0)
+        self.TR = TransformerBlock(128,128,4,2)
+        self.upcv1 = nn.ConvTranspose2d(128,10,8,8)
+        self.backchl = Conv(10,c2,3,1)
+
+    def forward(self,x):
+        y = self.cv1(x)
+        y=self.TR(y)
+        y=self.upcv1(y)
+        y=self.backchl(y)
+        return y
 
 ######################## cty add end
 
