@@ -252,6 +252,36 @@ class myTRcat(nn.Module):
         y=self.backchl(y)
         return y
 
+class myTRs(nn.Module):
+    def __init__(self,c1,emb_dim=4,stridek=4):
+        super(myTRs, self).__init__()
+        self.cv1 = Conv(c1,emb_dim,stridek,stridek,0)
+        self.TR = TransformerBlock(emb_dim,emb_dim,4,2)
+        self.upcv1 = nn.ConvTranspose2d(emb_dim,emb_dim,stridek,stridek)
+        self.backchl = Conv(emb_dim,c1,3,1)
+
+    def forward(self,x):
+        y = self.cv1(x)
+        y=self.TR(y)
+        y=self.upcv1(y)
+        y=self.backchl(y)
+        return x+y
+
+class C3mytr(nn.Module):
+    # CSP Bottleneck with 3 convolutions
+    def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
+        super(C3mytr, self).__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c1, c_, 1, 1)
+        self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
+        self.m = nn.Sequential(*[Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
+        self.tr = myTRs(c2)
+        # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
+
+    def forward(self, x):
+        y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+        return  self.tr(y) #self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
 ######################## cty add end
 
 
