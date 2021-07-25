@@ -404,7 +404,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                                             save_json=is_coco and final_epoch,
                                             verbose=nc < 50 , #and final_epoch
                                             plots=plots and final_epoch,
-                                            wandb_logger=wandb_logger,
+                                            wandb_logger=wandb_logger,half=False,
                                             compute_loss=compute_loss)
 
             # Write
