@@ -22,6 +22,7 @@ from utils.torch_utils import time_synchronized, fuse_conv_and_bn, model_info, s
 
 
 from models.dconv1 import DeformConv2D
+from models.swin import SwinTransformer
 
 try:
     import thop  # for FLOPs computation
@@ -250,7 +251,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                 pass
 
         n = max(round(n * gd), 1) if n > 1 else n  # depth gain
-        if m in [C3mytr, myTRcat, myTR, TransformerBlock, DeformConv2D, Conv, GhostConv, Bottleneck, GhostBottleneck, SPP, DWConv, MixConv2d, Focus, CrossConv, BottleneckCSP,
+        if m in [SwinTransformer, C3mytr, myTRcat, myTR, TransformerBlock, DeformConv2D, Conv, GhostConv, Bottleneck, GhostBottleneck, SPP, DWConv, MixConv2d, Focus, CrossConv, BottleneckCSP,
                  C3, C3TR]:
             c1, c2 = ch[f], args[0]
             if c2 != no:  # if not output
@@ -280,6 +281,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
         np = sum([x.numel() for x in m_.parameters()])  # number params
         m_.i, m_.f, m_.type, m_.np = i, f, t, np  # attach index, 'from' index, type, number params
         logger.info('%3s%18s%3s%10.0f  %-40s%-30s' % (i, f, n, np, t, args))  # print
+        print('%3s%18s%3s%10.0f  %-40s%-30s' % (i, f, n, np, t, args))   ###  for show in online train
         save.extend(x % i for x in ([f] if isinstance(f, int) else f) if x != -1)  # append to savelist
         layers.append(m_)
         if i == 0:
