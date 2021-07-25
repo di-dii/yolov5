@@ -616,8 +616,8 @@ class SwinTransformer(nn.Module):
 
         outs = []
         for i in range(self.num_layers):
-            layer = self.layers[i]
-            x_out, H, W, x, Wh, Ww = layer(x, Wh, Ww)
+            #layer = self.layers[i]
+            x_out, H, W, x, Wh, Ww = self.layers[i](x, Wh, Ww) #layer(x, Wh, Ww)
 
             if i in self.out_indices:
                 norm_layer = getattr(self, f'norm{i}')
@@ -626,4 +626,4 @@ class SwinTransformer(nn.Module):
                 out = x_out.view(-1, H, W, self.num_features[i]).permute(0, 3, 1, 2).contiguous()
                 outs.append(out)
 
-        return outs[3] #tuple(outs)
+        return  out #outs[3] #tuple(outs)
