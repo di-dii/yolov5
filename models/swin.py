@@ -497,7 +497,7 @@ class SwinTransformer(nn.Module):
                  out_indices=(0, 1, 2, 3),
                  frozen_stages=-1,
                  use_checkpoint=False):
-        super().__init__()
+        super(SwinTransformer, self).__init__()
 
         self.pretrain_img_size = pretrain_img_size
         self.num_layers = len(depths)
@@ -556,50 +556,50 @@ class SwinTransformer(nn.Module):
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
 
-        self._freeze_stages()
+        #self._freeze_stages()
 
-    def _freeze_stages(self):
-        if self.frozen_stages >= 0:
-            self.patch_embed.eval()
-            for param in self.patch_embed.parameters():
-                param.requires_grad = False
+    # def _freeze_stages(self):
+    #     if self.frozen_stages >= 0:
+    #         self.patch_embed.eval()
+    #         for param in self.patch_embed.parameters():
+    #             param.requires_grad = False
 
-        if self.frozen_stages >= 1 and self.ape:
-            self.absolute_pos_embed.requires_grad = False
+    #     if self.frozen_stages >= 1 and self.ape:
+    #         self.absolute_pos_embed.requires_grad = False
 
-        if self.frozen_stages >= 2:
-            self.pos_drop.eval()
-            for i in range(0, self.frozen_stages - 1):
-                m = self.layers[i]
-                m.eval()
-                for param in m.parameters():
-                    param.requires_grad = False
+    #     if self.frozen_stages >= 2:
+    #         self.pos_drop.eval()
+    #         for i in range(0, self.frozen_stages - 1):
+    #             m = self.layers[i]
+    #             m.eval()
+    #             for param in m.parameters():
+    #                 param.requires_grad = False
 
-    def init_weights(self, pretrained=None):
-        """Initialize the weights in backbone.
+    # def init_weights(self, pretrained=None):
+    #     """Initialize the weights in backbone.
 
-        Args:
-            pretrained (str, optional): Path to pre-trained weights.
-                Defaults to None.
-        """
+    #     Args:
+    #         pretrained (str, optional): Path to pre-trained weights.
+    #             Defaults to None.
+    #     """
 
-        def _init_weights(m):
-            if isinstance(m, nn.Linear):
-                trunc_normal_(m.weight, std=.02)
-                if isinstance(m, nn.Linear) and m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.LayerNorm):
-                nn.init.constant_(m.bias, 0)
-                nn.init.constant_(m.weight, 1.0)
+    #     def _init_weights(m):
+    #         if isinstance(m, nn.Linear):
+    #             trunc_normal_(m.weight, std=.02)
+    #             if isinstance(m, nn.Linear) and m.bias is not None:
+    #                 nn.init.constant_(m.bias, 0)
+    #         elif isinstance(m, nn.LayerNorm):
+    #             nn.init.constant_(m.bias, 0)
+    #             nn.init.constant_(m.weight, 1.0)
 
-        if isinstance(pretrained, str):
-            self.apply(_init_weights)
-            #logger = get_root_logger()
-            #load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            self.apply(_init_weights)
-        else:
-            raise TypeError('pretrained must be a str or None')
+    #     if isinstance(pretrained, str):
+    #         self.apply(_init_weights)
+    #         #logger = get_root_logger()
+    #         #load_checkpoint(self, pretrained, strict=False, logger=logger)
+    #     elif pretrained is None:
+    #         self.apply(_init_weights)
+    #     else:
+    #         raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         """Forward function."""
