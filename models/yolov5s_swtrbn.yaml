@@ -1,7 +1,7 @@
 # parameters
 nc: 80  # number of classes
 depth_multiple: 0.33  # model depth multiple
-width_multiple: 0.50  # layer channel multiple
+width_multiple: 1.0 #0.50  # layer channel multiple
 
 # anchors
 anchors:
@@ -13,7 +13,7 @@ anchors:
 backbone:
   # [from, number, module, args]
   [
-   [-1, 1, SwinTransformer, [1024]],
+   [-1, 1, SwinTransformer, [768]],
 
   #  [-1, 1, Focus, [64, 3]],  # 0-P1/2
   #  [-1, 1, Conv, [128, 3, 2]],  # 1-P2/4
