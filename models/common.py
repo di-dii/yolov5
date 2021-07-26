@@ -282,6 +282,54 @@ class C3mytr(nn.Module):
     def forward(self, x):
         y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         return  self.tr(y) #self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+
+class simam_module(torch.nn.Module):
+    def __init__(self, e_lambda = 1e-2):
+        super(simam_module, self).__init__()
+
+        self.activaton = nn.Sigmoid()
+        self.e_lambda = e_lambda
+
+    def forward(self, x):
+
+        b, c, h, w = x.size()
+        
+        n = w * h - 1
+
+        x_minus_mu_square = (x - x.mean(dim=[2,3], keepdim=True)).pow(2)
+        y = x_minus_mu_square / (4 * (x_minus_mu_square.sum(dim=[2,3], keepdim=True) / n + self.e_lambda)) + 0.5
+
+        return x * self.activaton(y)
+
+class BottlenecksimAM(nn.Module):
+    # Standard bottleneck
+    def __init__(self, c1, c2, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, shortcut, groups, expansion
+        super(BottlenecksimAM, self).__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c_, c2, 3, 1, g=g)
+        self.add = shortcut and c1 == c2
+        self.simAM = simam_module()
+
+    def forward(self, x):
+        y = simam_module(self.cv2(self.cv1(x)))
+        return x + y if self.add else y
+
+class C3simAM(nn.Module):
+    # CSP Bottleneck with 3 convolutions
+    def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
+        super(C3simAM, self).__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c1, c_, 1, 1)
+        self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
+        self.m = nn.Sequential(*[BottlenecksimAM(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
+        self.tr = myTRs(c2)
+        # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
+
+    def forward(self, x):
+        y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+        return  self.tr(y) #self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
 ######################## cty add end
 
 
