@@ -24,7 +24,7 @@
 
 storage.googleapis.com
 runs/*
-data/*
+#data/*
 !data/my_fires.yaml
 !data/kag_fire.yaml
 !data/kag_2wfs.yaml
@@ -245,3 +245,5 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+
