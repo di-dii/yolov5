@@ -183,7 +183,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         lf = lambda x: (1 - x / (epochs - 1)) * (1.0 - hyp['lrf']) + hyp['lrf']  # linear
     else:
         lf = one_cycle(1, hyp['lrf'], epochs)  # cosine 1->hyp['lrf']
-    scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
+
+    if not opt.adam:
+        scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
+    else:
+        scheduler = lr_scheduler.StepLR(optimizer, 25, gamma=0.3, last_epoch=-1)
     # plot_lr_scheduler(optimizer, scheduler, epochs)
 
     # EMA
