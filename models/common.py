@@ -212,6 +212,26 @@ class Concat(nn.Module):
         return torch.cat(x, self.d)
 
 ######################## cty add
+
+class getST_stage2(nn.Module):
+    def __init__(self, c1,c2):
+        super().__init__()
+
+    def forward(self, x):
+        return x[1]
+class getST_stage3(nn.Module):
+    def __init__(self, c1,c2):
+        super().__init__()
+
+    def forward(self, x):
+        return x[2]
+class getST_stage4(nn.Module):
+    def __init__(self, c1,c2):
+        super().__init__()
+
+    def forward(self, x):
+        return x[3]
+
 class myTR(nn.Module):
     def __init__(self,c1,c2,emb_dim=32,stridek=8):
         super(myTR, self).__init__()

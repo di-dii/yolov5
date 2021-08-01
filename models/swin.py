@@ -626,4 +626,6 @@ class SwinTransformer(nn.Module):
                 out = x_out.view(-1, H, W, self.num_features[i]).permute(0, 3, 1, 2).contiguous()
                 outs.append(out)
 
-        return  out #outs[3] #tuple(outs)
+        return  outs #outs[3] #tuple(outs)
+
+
