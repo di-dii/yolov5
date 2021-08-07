@@ -47,6 +47,20 @@ from utils.torch_utils import ModelEMA, select_device, intersect_dicts, torch_di
 from utils.wandb_logging.wandb_utils import WandbLogger, check_wandb_resume
 
 
+def seed_torch(seed=1029):
+	random.seed(seed)
+	os.environ['PYTHONHASHSEED'] = str(seed) # 为了禁止hash随机化，使得实验可复现
+	np.random.seed(seed)
+	torch.manual_seed(seed)
+	torch.cuda.manual_seed(seed)
+	#torch.cuda.manual_seed_all(seed) # if you are using multi-GPU.
+	#torch.backends.cudnn.benchmark = False
+	#torch.backends.cudnn.deterministic = True
+
+seed_torch(1240)
+
+
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()

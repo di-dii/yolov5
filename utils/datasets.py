@@ -72,6 +72,8 @@ def exif_size(img):
 
     return s
 
+def _init_fn(worker_id):
+    np.random.seed(int(102)+worker_id)
 
 def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=None, augment=False, cache=False, pad=0.0,
                       rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix='', use4ch=False):
@@ -100,6 +102,7 @@ def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=Non
                         num_workers=nw,
                         sampler=sampler,
                         pin_memory=True,
+                        worker_init_fn= _init_fn ,
                         collate_fn=LoadImagesAndLabels.collate_fn4 if quad else LoadImagesAndLabels.collate_fn)
     return dataloader, dataset
 
