@@ -551,11 +551,13 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
         if self.augment:
             # add gauss noise N(0,6^2) by TY
-            sz = img.shape
-            img = img + np.random.randn(sz[0],sz[1],sz[2])*6
-            img[img>255] = 255
-            img[img<0] = 0
-            img = img.astype(np.uint8)
+            if False:
+                sz = img.shape
+                img = img + np.random.randn(sz[0],sz[1],sz[2])*6
+                img[img>255] = 255
+                img[img<0] = 0
+                img = img.astype(np.uint8)
+                print("this is noise work")
 
             # Augment imagespace
             if not mosaic:
