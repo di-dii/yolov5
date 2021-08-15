@@ -102,8 +102,8 @@ class ComputeLoss:
         # Focal loss
         g = h['fl_gamma']  # focal loss gamma
         if g > 0:
-            #BCEcls, BCEobj = FocalLoss(BCEcls, g), FocalLoss(BCEobj, g)
-            BCEobj = FocalLoss(BCEobj, g)
+            BCEcls, BCEobj = FocalLoss(BCEcls, g), FocalLoss(BCEobj, g)
+            #BCEobj = FocalLoss(BCEobj, g)
 
         det = model.module.model[-1] if is_parallel(model) else model.model[-1]  # Detect() module
         self.balance = {3: [4.0, 1.0, 0.4]}.get(det.nl, [4.0, 1.0, 0.25, 0.06, .02])  # P3-P7
@@ -134,7 +134,7 @@ class ComputeLoss:
                 lbox += (1.0 - iou).mean()  # iou loss
 
                 # Objectness
-                tobj[b, a, gj, gi] = (1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
+                tobj[b, a, gj, gi] = 1.0  #(1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
 
                 # Classification
                 if self.nc > 1:  # cls loss (only if multiple classes)
