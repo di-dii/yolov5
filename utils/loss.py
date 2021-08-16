@@ -134,7 +134,7 @@ class ComputeLoss:
                 lbox += (1.0 - iou).mean()  # iou loss
 
                 # Objectness
-                tobj[b, a, gj, gi] = 1.0  #(1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
+                tobj[b, a, gj, gi] = (1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
 
                 # Classification
                 if self.nc > 1:  # cls loss (only if multiple classes)

@@ -601,6 +601,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         # Convert
 
         if not self.use4ch:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)   # 使用hsv颜色空间 to enhance color prior
             img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
         else:
             # dehaze
