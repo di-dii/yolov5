@@ -133,15 +133,15 @@ class ComputeLoss:
                 iou = bbox_iou(pbox.T, tbox[i], x1y1x2y2=False, CIoU=True)  # iou(prediction, target)
                 
                 # weight iou loss  by cty
-                num_c=2   #### num of class    
-                weight_one_p_iou = 1-iou              
-                for j in range(num_c):
-                    cj_total = int(torch.sum(tcls[i]==j))  #### layer[i] target total number of class j   
-                    factorj = 2*(1-cj_total/len(tcls[i]))     #for balance class occupation
-                    weight_one_p_iou = torch.where(tcls[i]==j,factorj*weight_one_p_iou,weight_one_p_iou)
-                lbox +=  weight_one_p_iou.mean()  #(1.0 - iou).mean()  # iou loss
+                # num_c=2   #### num of class    
+                # weight_one_p_iou = 1-iou              
+                # for j in range(num_c):
+                #     cj_total = int(torch.sum(tcls[i]==j))  #### layer[i] target total number of class j   
+                #     factorj = 2*(1-cj_total/len(tcls[i]))     #for balance class occupation
+                #     weight_one_p_iou = torch.where(tcls[i]==j,factorj*weight_one_p_iou,weight_one_p_iou)
+                # lbox +=  weight_one_p_iou.mean()  #(1.0 - iou).mean()  # iou loss
 
-                #lbox += (1.0 - iou).mean()  # iou loss
+                lbox += (1.0 - iou).mean()  # iou loss
 
                 # Objectness
                 tobj[b, a, gj, gi] = (1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
