@@ -214,7 +214,7 @@ class Concat(nn.Module):
 ######################## cty add
 
 class Conadd(nn.Module):
-    def __init__(self):
+    def __init__(self,nothing=1):
         super().__init__()
 
     def forward(self,x):
