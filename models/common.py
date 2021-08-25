@@ -213,6 +213,13 @@ class Concat(nn.Module):
 
 ######################## cty add
 
+class Conadd(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self,x):
+        return x[0]+x[1]
+
 class getST_stage2(nn.Module):
     def __init__(self, c1,c2):
         super().__init__()

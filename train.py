@@ -208,6 +208,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     ema = ModelEMA(model) if RANK in [-1, 0] else None
 
     # Resume
+    best_e = 0
     start_epoch, best_fitness = 0, 0.0
     if pretrained:
         # Optimizer
@@ -450,6 +451,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             fi = fitness(np.array(results).reshape(1, -1))  # weighted combination of [P, R, mAP@.5, mAP@.5-.95]
             if fi > best_fitness:
                 best_fitness = fi
+                best_e = epoch
             wandb_logger.end_epoch(best_result=best_fitness == fi)
 
             # Save model
@@ -474,6 +476,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         # end epoch ----------------------------------------------------------------------------------------------------
     # end training -----------------------------------------------------------------------------------------------------
+    
+    logger.info(f'the best map0.5 is : {best_fitness} at epoch {best_e}\n')
+    
     if RANK in [-1, 0]:
         logger.info(f'{epoch - start_epoch + 1} epochs completed in {(time.time() - t0) / 3600:.3f} hours.\n')
         if plots:
