@@ -739,6 +739,8 @@ def load_mosaic(self, index):
 
         # Labels
         labels, segments = self.labels[index].copy(), self.segments[index].copy()
+        ####  cty 标签收缩
+        labels[:, 3:] = labels[:, 3:]*0.8
         if labels.size:
             labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padw, padh)  # normalized xywh to pixel xyxy format
             segments = [xyn2xy(x, w, h, padw, padh) for x in segments]
