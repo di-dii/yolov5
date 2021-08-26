@@ -30,19 +30,38 @@ head:
    [-1,1,TransformerBlock,[1024,4,1]],   #10    #TODO  4 is small?    act func ?
    [-1, 1, nn.Upsample, [None, 2, 'nearest']],
 
-   [6,1,Conv,[1024,1,1]],
-   [[-1,-2],1,Conadd,[1]],
-   [-1,1,Conv,[512,1,1]],                #14
+   [6,1,TransformerBlock,[512,4,1]],
+
+   [-1,1,Conv,[1024,1,1]],
+   [[-1,-3],1,Conadd,[1]],
+   [-1,1,Conv,[512,1,1]],   #TODO using k=3             #15     
 
    [-1, 1, nn.Upsample, [None, 2, 'nearest']],
-   [4,1,Conv,[512,1,1]],
-   [[-1,-2],1,Conadd,[1]],
-   [-1,1,Conv,[256,1,1]],               #18
 
-  
+   [4,1,TransformerBlock,[256,4,1]],
+   [-1,1,Conv,[512,1,1]],
+   
+   [[-1,-3],1,Conadd,[1]],
+   [-1,1,Conv,[256,1,1]],               #20
 
-
-   [[18, 14, 10], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
+   [[20, 15, 10], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
   ]
 
-  #  best map and neck 
+
+  #  0.691
+  # head:
+  # [
+  #  [-1,1,TransformerBlock,[1024,4,1]],   #10    #TODO  4 is small?    act func ?
+  #  [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+
+  #  [6,1,Conv,[1024,1,1]],
+  #  [[-1,-2],1,Conadd,[1]],
+  #  [-1,1,Conv,[512,1,1]],                #14
+
+  #  [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+  #  [4,1,Conv,[512,1,1]],
+  #  [[-1,-2],1,Conadd,[1]],
+  #  [-1,1,Conv,[256,1,1]],               #18
+   
+  #  [[18, 14, 10], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
+  # ]
