@@ -56,11 +56,14 @@ class TransformerLayer(nn.Module):
         self.v = nn.Linear(c, c, bias=False)
         self.ma = nn.MultiheadAttention(embed_dim=c, num_heads=num_heads)
         self.fc1 = nn.Linear(c, c, bias=False)
+        ####
+        self.act = nn.GELU()
+        ####
         self.fc2 = nn.Linear(c, c, bias=False)
 
     def forward(self, x):
         x = self.ma(self.q(x), self.k(x), self.v(x))[0] + x
-        x = self.fc2(self.fc1(x)) + x
+        x = self.fc2(act(self.fc1(x))) + x
         return x
 
 
