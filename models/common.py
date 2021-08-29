@@ -17,7 +17,7 @@ from utils.general import non_max_suppression, make_divisible, scale_coords, inc
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import time_synchronized
 
-
+from models.dconv1 import DeformConv2D
 
 
 def autopad(k, p=None):  # kernel, padding
@@ -215,6 +215,21 @@ class Concat(nn.Module):
         return torch.cat(x, self.d)
 
 ######################## cty add
+
+class ResDconv(nn.Module):
+    def __init__(self,c1,c2):
+        super().__init__()
+        c_ = int(c1/2)
+        self.conv1 = Conv(c1,c_,1,1)
+        self.dconv = DeformConv2D(c_,c_)
+        self.cat = Concat(1)
+
+    def forward(self,x):
+        x = self.conv1(x)
+        return self.cat((self.dconv(x),x))
+        
+
+
 
 class Conadd(nn.Module):
     def __init__(self,nothing=1):

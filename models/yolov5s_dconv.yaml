@@ -1,3 +1,4 @@
+
 # parameters
 nc: 80  # number of classes
 depth_multiple: 0.33  # model depth multiple
@@ -17,21 +18,16 @@ backbone:
    [-1, 3, C3, [128]],
    [-1, 1, Conv, [256, 3, 2]],  # 3-P3/8
    [-1, 9, C3, [256]],
-
-  ####TODO  no enough bn and act func
-
-   [-1, 1, DeformConv2D, [256, 3, 1]],    
-
    [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16  
-   #[-1, 9, C3, [512]],
+   [-1, 9, C3, [512]],
 
-   [-1, 4, DeformConv2D, [512, 3, 1]],   ### DeformConv2D 
+   [-1, 1, DeformConv2D, [512, 3, 1]],   ### DeformConv2D 
 
    [-1, 1, Conv, [1024, 3, 2]],  # 7-P5/32
    [-1, 1, SPP, [1024, [5, 9, 13]]],
-   #[-1, 3, C3, [1024, False]],  # 9
+   [-1, 3, C3, [1024, False]],  # 9
 
-   [-1, 3, DeformConv2D, [1024, 3, 1]]  ### DeformConv2D 
+   [-1, 1, DeformConv2D, [1024, 3, 1]]  ### DeformConv2D 
   ]
 
 # YOLOv5 head
@@ -43,32 +39,28 @@ head:
 
    [-1, 1, Conv, [256, 1, 1]],
    [-1, 1, nn.Upsample, [None, 2, 'nearest']],
-   [[-1, 5], 1, Concat, [1]],  # cat backbone P3
+   [[-1, 4], 1, Concat, [1]],  # cat backbone P3
    [-1, 3, C3, [256, False]],  # 17 (P3/8-small)
 
    [-1, 1, Conv, [256, 3, 2]],
-   [[-1, 15], 1, Concat, [1]],  # cat head P4
+   [[-1, 16], 1, Concat, [1]],  # cat head P4
    [-1, 3, C3, [512, False]],  # 20 (P4/16-medium)
 
    [-1, 1, Conv, [512, 3, 2]],
-   [[-1, 11], 1, Concat, [1]],  # cat head P5
+   [[-1, 12], 1, Concat, [1]],  # cat head P5
    [-1, 3, C3, [1024, False]],  # 23 (P5/32-large)
 
 
   #TODO  add dconv here may
-   [[18, 21, 24], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
+   [[19, 22, 25], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
   ]
 
 
 
-#####################################################################################################
 
-#    [-1,1,Conv,[256,3,1]],
-#    [-1, 1, DeformConv2D, [256, 3, 1]],   ### DeformConv2D 
-#    [-2,1,SELayer,[256]],
-#    [[-2, -1], 1, Concat, [1]],      # 512 
 
-######################################################################################################
+
+
 
 # # parameters
 # nc: 80  # number of classes
@@ -89,16 +81,21 @@ head:
 #    [-1, 3, C3, [128]],
 #    [-1, 1, Conv, [256, 3, 2]],  # 3-P3/8
 #    [-1, 9, C3, [256]],
-#    [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16  
-#    [-1, 9, C3, [512]],
 
-#    [-1, 1, DeformConv2D, [512, 3, 1]],   ### DeformConv2D 
+#   ####TODO  no enough bn and act func
+
+#    [-1, 1, DeformConv2D, [256, 3, 1]],    
+
+#    [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16  
+#    #[-1, 9, C3, [512]],
+
+#    [-1, 4, DeformConv2D, [512, 3, 1]],   ### DeformConv2D 
 
 #    [-1, 1, Conv, [1024, 3, 2]],  # 7-P5/32
 #    [-1, 1, SPP, [1024, [5, 9, 13]]],
-#    [-1, 3, C3, [1024, False]],  # 9
+#    #[-1, 3, C3, [1024, False]],  # 9
 
-#    [-1, 1, DeformConv2D, [1024, 3, 1]]  ### DeformConv2D 
+#    [-1, 3, DeformConv2D, [1024, 3, 1]]  ### DeformConv2D 
 #   ]
 
 # # YOLOv5 head
@@ -110,18 +107,29 @@ head:
 
 #    [-1, 1, Conv, [256, 1, 1]],
 #    [-1, 1, nn.Upsample, [None, 2, 'nearest']],
-#    [[-1, 4], 1, Concat, [1]],  # cat backbone P3
+#    [[-1, 5], 1, Concat, [1]],  # cat backbone P3
 #    [-1, 3, C3, [256, False]],  # 17 (P3/8-small)
 
 #    [-1, 1, Conv, [256, 3, 2]],
-#    [[-1, 16], 1, Concat, [1]],  # cat head P4
+#    [[-1, 15], 1, Concat, [1]],  # cat head P4
 #    [-1, 3, C3, [512, False]],  # 20 (P4/16-medium)
 
 #    [-1, 1, Conv, [512, 3, 2]],
-#    [[-1, 12], 1, Concat, [1]],  # cat head P5
+#    [[-1, 11], 1, Concat, [1]],  # cat head P5
 #    [-1, 3, C3, [1024, False]],  # 23 (P5/32-large)
 
 
 #   #TODO  add dconv here may
-#    [[19, 22, 25], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
+#    [[18, 21, 24], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
 #   ]
+
+
+
+#####################################################################################################
+
+#    [-1,1,Conv,[256,3,1]],
+#    [-1, 1, DeformConv2D, [256, 3, 1]],   ### DeformConv2D 
+#    [-2,1,SELayer,[256]],
+#    [[-2, -1], 1, Concat, [1]],      # 512 
+
+######################################################################################################
