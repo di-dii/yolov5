@@ -18,7 +18,7 @@ from utils.plots import colors, plot_one_box
 from utils.torch_utils import time_synchronized
 
 from models.dconv1 import DeformConv2D
-
+from models.attention import SELayer
 
 def autopad(k, p=None):  # kernel, padding
     # Pad to 'same'
@@ -221,13 +221,16 @@ class ResDconv(nn.Module):
         super().__init__()
         c_ = int(c1/2)
         self.conv1 = Conv(c1,c_,1,1)
+
+        self.se = SELayer(c_)
+
         self.dconv = DeformConv2D(c_,c_)
         self.cat = Concat(1)
 
     def forward(self,x):
-        x = self.conv1(x)
+        x = self.se(self.conv1(x))
         return self.cat((self.dconv(x),x))
-        
+
 
 
 
