@@ -248,7 +248,7 @@ class ResDconvK2(nn.Module):
         super().__init__()
         c_ = int(c1/2)
         self.c_ = c_
-        self.conv1 = Conv(c1,c_,1,1)
+        #self.conv1 = Conv(c1,c_,1,1)
         self.dconv = DeformConv2D(c_,c_)
         self.dconv2 = DeformConv2D(c_,c_)
         self.cat = Concat(1)
