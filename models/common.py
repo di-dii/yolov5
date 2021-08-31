@@ -244,7 +244,7 @@ class ResDconvK1(nn.Module):     # map0.5 = 0.720     se
         return self.cat((self.dconv(x),x))
 
 class ResDconvK2(nn.Module):
-    def __init__(self,c1):
+    def __init__(self,c1,c2):
         super().__init__()
         c_ = int(c1/2)
         self.c_ = c_
