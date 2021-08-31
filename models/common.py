@@ -215,8 +215,20 @@ class Concat(nn.Module):
         return torch.cat(x, self.d)
 
 ######################## cty add
+class ResDconv(nn.Module):      #map0.5 = 0.729
+    def __init__(self,c1,c2):
+        super().__init__()
+        c_ = int(c1/2)
+        self.conv1 = Conv(c1,c_,1,1)
+        self.dconv = DeformConv2D(c_,c_)
+        self.cat = Concat(1)
 
-class ResDconv(nn.Module):
+    def forward(self,x):
+        x = self.conv1(x)
+        return self.cat((self.dconv(x),x))
+
+
+class ResDconvK1(nn.Module):     # map0.5 = 0.720     se
     def __init__(self,c1,c2):
         super().__init__()
         c_ = int(c1/2)
@@ -231,7 +243,18 @@ class ResDconv(nn.Module):
         x = self.se(self.conv1(x))
         return self.cat((self.dconv(x),x))
 
+class ResDconvK2(nn.Module):
+    def __init__(self,c1,c2):
+        super().__init__()
+        c_ = int(c1/2)
+        self.c_ = c_
+        self.conv1 = Conv(c1,c_,1,1)
+        self.dconv = DeformConv2D(c_,c_)
+        self.dconv2 = DeformConv2D(c_,c_)
+        self.cat = Concat(1)
 
+    def forward(self,x):
+        return self.cat((self.dconv(x[:,:self.c_,...]),self.dconv2(x[:,self.c_:,...])) )
 
 
 class Conadd(nn.Module):
