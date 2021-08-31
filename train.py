@@ -309,7 +309,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     results = (0, 0, 0, 0, 0, 0, 0)  # P, R, mAP@.5, mAP@.5-.95, val_loss(box, obj, cls)
     scheduler.last_epoch = start_epoch - 1  # do not move
     scaler = amp.GradScaler(enabled=cuda)
-    compute_loss = ComputeLoss(model)  # init loss class
+    if opt.Bloss:
+        logger.info('Using Bloss')
+    compute_loss = ComputeLoss(model,Bloss = opt.Bloss)  # init loss class
     logger.info(f'Image sizes {imgsz} train, {imgsz_test} test\n'
                 f'Using {dataloader.num_workers} dataloader workers\n'
                 f'Logging results to {save_dir}\n'
@@ -554,6 +556,7 @@ def parse_opt(known=False):
     parser.add_argument('--artifact_alias', type=str, default="latest", help='version of dataset artifact to be used')
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
     parser.add_argument('--use4ch', action='store_true', help='use 4 channels')
+    parser.add_argument('--Bloss',action='store_true', help='use blc loss')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
