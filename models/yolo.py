@@ -261,7 +261,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                 pass
 
         n = max(round(n * gd), 1) if n > 1 else n  # depth gain
-        if m in [ResDconvK2,ResDconv,SELayer,getST_stage2,getST_stage3,getST_stage4,C3simAM, SwinTransformer, C3mytr, myTRcat, myTR, TransformerBlock, DeformConv2D, Conv, GhostConv, Bottleneck, GhostBottleneck, SPP, DWConv, MixConv2d, Focus, CrossConv, BottleneckCSP,
+        if m in [ResDconvK3,ResDconvK2,ResDconv,SELayer,getST_stage2,getST_stage3,getST_stage4,C3simAM, SwinTransformer, C3mytr, myTRcat, myTR, TransformerBlock, DeformConv2D, Conv, GhostConv, Bottleneck, GhostBottleneck, SPP, DWConv, MixConv2d, Focus, CrossConv, BottleneckCSP,
                  C3, C3TR]:
             c1, c2 = ch[f], args[0]
             if c2 != no:  # if not output
