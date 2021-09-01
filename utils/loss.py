@@ -136,14 +136,19 @@ class ComputeLoss:
                 if not self.Bloss:
                     lbox += (1.0 - iou).mean()  # iou loss
                 else:
-                    # weight iou loss  by cty
-                    num_c=2   #### num of class    
-                    weight_one_p_iou = 1-iou              
-                    for j in range(num_c):
-                        cj_total = int(torch.sum(tcls[i]==j))  #### layer[i] target total number of class j   
-                        factorj = 2*(1-cj_total/len(tcls[i]))     #for balance class occupation
-                        weight_one_p_iou = torch.where(tcls[i]==j,factorj*weight_one_p_iou,weight_one_p_iou)
-                    lbox +=  weight_one_p_iou.mean()  #(1.0 - iou).mean()  # iou loss
+                    ##  edition 2
+                    ioud = (1.0-iou).detach().clamp(0)
+                    lbox += ( 4*torch.pow(ioud,2) * (1.0-iou) ).mean()
+
+                    if False:   # first edition
+                        # weight iou loss  by cty
+                        num_c=2   #### num of class    
+                        weight_one_p_iou = 1-iou              
+                        for j in range(num_c):
+                            cj_total = int(torch.sum(tcls[i]==j))  #### layer[i] target total number of class j   
+                            factorj = 2*(1-cj_total/len(tcls[i]))     #for balance class occupation
+                            weight_one_p_iou = torch.where(tcls[i]==j,factorj*weight_one_p_iou,weight_one_p_iou)
+                        lbox +=  weight_one_p_iou.mean()  #(1.0 - iou).mean()  # iou loss
 
                 
 
