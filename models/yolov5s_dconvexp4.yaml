@@ -20,13 +20,13 @@ backbone:
    [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16  
    [-1, 9, C3, [512]],
 
-   [-1, 1, ResDconv, [512]],   ### DeformConv2D 
+   [-1, 1, ResDconvK4, [512]],   ### DeformConv2D 
 
    [-1, 1, Conv, [1024, 3, 2]],  # 7-P5/32
    [-1, 1, SPP, [1024, [5, 9, 13]]],
    [-1, 3, C3, [1024, False]],  # 9
 
-   [-1, 1, ResDconv, [1024]],  ### DeformConv2D 
+   [-1, 1, ResDconvK4, [1024]],  ### DeformConv2D 
 
   ]
 

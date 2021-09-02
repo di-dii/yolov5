@@ -269,7 +269,17 @@ class ResDconvK3(nn.Module):                  #map0.5 =
         x = self.conv1(x)
         return self.cbam(self.cat((self.dconv(x),x)))
 
+class ResDconvK4(nn.Module):      ##map0.5 =  
+    def __init__(self,c1,c2):
+        super().__init__()
+        c_ = int(c1/2)
+        self.conv1 = Conv(c1,c_,1,1)
+        self.dconv = DeformConv2D(c_,c_)
+        self.conv2 = Conv(c_,c1,1,1)
 
+    def forward(self,x):
+        x = self.conv1(x)
+        return self.conv2(self.dconv(x) + x)
 
 
 class Conadd(nn.Module):
