@@ -142,9 +142,6 @@ class ComputeLoss:
 
                     if False:   # first edition
                         # weight iou loss  by cty
-
-                        print('????????')
-
                         num_c=2   #### num of class    
                         weight_one_p_iou = 1-iou              
                         for j in range(num_c):
@@ -156,7 +153,7 @@ class ComputeLoss:
                 
 
                 # Objectness
-                tobj[b, a, gj, gi] = (1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
+                tobj[b, a, gj, gi] = 1.0 #(1.0 - self.gr) + self.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
 
                 # Classification
                 if self.nc > 1:  # cls loss (only if multiple classes)
